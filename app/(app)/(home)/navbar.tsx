@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { ReactNode, useState } from "react";
 
-import { NavbarSidebar } from "@/app/(home)/navbar-sidebar";
+import { NavbarSidebar } from "@/app/(app)/(home)/navbar-sidebar";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
