@@ -1,6 +1,7 @@
 "use client";
 import React, { useRef, useState } from "react";
 
+import { useDropdownPosition } from "@/app/(app)/(home)/search-filters/use-dropdown-position";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Category } from "@/payload-types";
@@ -19,6 +20,7 @@ export const CategoryDropdown = ({
   const [isOpen, setIsOpen] = useState(false);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const { getDropDownPosition } = useDropdownPosition(dropdownRef);
   const onMouseLeave = () => {
     setIsOpen(false);
   };
