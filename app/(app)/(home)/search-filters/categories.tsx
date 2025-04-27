@@ -5,6 +5,7 @@ import { ListFilterIcon } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 
 import { CategoryDropdown } from "@/app/(app)/(home)/category-dropdown";
+import { CategoriesSidebar } from "@/app/(app)/(home)/search-filters/categories-sidebar";
 import { CustomCategory } from "@/app/(app)/(home)/types";
 import { cn } from "@/lib/utils";
 
@@ -58,6 +59,11 @@ export const Categories = ({ data }: CategoriesProps) => {
   return (
     <div className="relative w-full">
       {/* Invisible items (for measuring) */}
+      <CategoriesSidebar
+        open={isSidebarOpen}
+        onOpenChange={setIsSidebarOpen}
+        data={data}
+      />
       <div
         className="absolute opacity-0 pointer-events-none flex"
         ref={measureRef}
