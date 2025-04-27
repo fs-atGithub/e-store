@@ -47,17 +47,24 @@ export const CategoriesSidebar = ({
     if (category.subcategories && category.subcategories.length > 0) {
       setParentCategory(category); // Dive into subcategories
     } else {
-      router.push(`/categories/${category.slug}`); // Navigate to category page
+      // Navigate to the correct category URL, including parent category if applicable
+      if (parentCategory) {
+        router.push(`/categories/${parentCategory.slug}/${category.slug}`); // Correct URL format
+      } else {
+        router.push(`/categories/${category.slug}`); // Top-level category
+      }
       onOpenChange(false); // Close sidebar
     }
   };
+
+  const backgroundColor = parentCategory?.color ?? "white";
 
   return (
     <Sheet open={open} onOpenChange={handleOpenChange}>
       <SheetContent
         side="left"
         className="p-0 transition-none"
-        style={{ backgroundColor: "white" }}
+        style={{ backgroundColor }}
       >
         <SheetHeader className="p-4 border-b">
           <SheetTitle>Categories</SheetTitle>
