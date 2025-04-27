@@ -29,6 +29,11 @@ export const CategoriesSidebar = ({
     null,
   );
 
+  const handleOpenChange = (open: boolean) => {
+    setParentCategory(null);
+    onOpenChange(open);
+  };
+
   const currentCategories = parentCategory?.subcategories ?? data;
 
   const handleCategoryClick = (category: CustomCategory) => {
@@ -48,7 +53,7 @@ export const CategoriesSidebar = ({
   };
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
+    <Sheet open={open} onOpenChange={handleOpenChange}>
       <SheetContent
         side="left"
         className="p-0 transition-none"
