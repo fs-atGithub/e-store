@@ -1,26 +1,122 @@
-import React from "react";
+"use client";
+
+import { Button } from "@payloadcms/ui";
+import { ListFilterIcon } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { CategoryDropdown } from "@/app/(app)/(home)/category-dropdown";
 import { CustomCategory } from "@/app/(app)/(home)/types";
-import { Category } from "@/payload-types";
+import { cn } from "@/lib/utils";
 
 type CategoriesProps = {
   data: CustomCategory[];
 };
 
 export const Categories = ({ data }: CategoriesProps) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const measureRef = useRef<HTMLDivElement>(null);
+  const viewAllRef = useRef<HTMLDivElement>(null);
+
+  const [visibleCount, setVisibleCount] = useState(data.length);
+  const [isAnyHovered, setIsAnyHovered] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const activeCategory = "All";
+
+  const activeCategoryIndex = data.findIndex(
+    (cat) => cat.slug === activeCategory,
+  );
+  const isActiveCategoryHidden =
+    activeCategoryIndex >= visibleCount && activeCategoryIndex !== -1;
+
+  useEffect(() => {
+    const calculateVisible = () => {
+      if (!containerRef.current || !measureRef.current || !viewAllRef.current)
+        return;
+      const containerWidth = containerRef.current.offsetWidth;
+      const viewAllWidth = viewAllRef.current.offsetWidth;
+      const availableWidth = containerWidth - viewAllWidth;
+
+      const items = Array.from(measureRef.current.children);
+      let totalWidth = 0;
+      let visible = 0;
+      for (const item of items) {
+        const width = item.getBoundingClientRect().width;
+        if (totalWidth + width > availableWidth) {
+          break;
+        }
+        totalWidth += width;
+        visible++;
+      }
+      setVisibleCount(visible);
+    };
+    const resizeObserver = new ResizeObserver(calculateVisible);
+    resizeObserver.observe(containerRef.current!);
+    return () => resizeObserver.disconnect();
+  }, [data.length]);
+
   return (
-    <div className={"relative w-full"}>
-      <div className={"flex items-center flex-nowrap"}>
+    <div className="relative w-full">
+      {/* Invisible items (for measuring) */}
+      <div
+        className="absolute opacity-0 pointer-events-none flex"
+        ref={measureRef}
+        style={{ position: "fixed", top: -1000, left: -1000 }}
+      >
         {data.map((category) => (
-          <div key={category.id}>
+          <div key={category.id} className="flex-shrink-0">
             <CategoryDropdown
               category={category}
-              isActive={false}
-              isNavigationHovered={false}
+              isActive={activeCategory === category.slug}
+              isNavigationHovered={isAnyHovered}
             />
           </div>
         ))}
+        <div ref={viewAllRef} className="flex-shrink-0">
+          <Button
+            className={cn(
+              "h-11 px-4 bg-transparent border-transparent rounded-full hover:bg-white hover:border-primary text-black",
+              isActiveCategoryHidden &&
+                !isAnyHovered &&
+                "bg-white border-primary",
+            )}
+          >
+            View all
+            <ListFilterIcon className="ml-2" />
+          </Button>
+        </div>
+      </div>
+
+      {/* Visible items */}
+      <div
+        ref={containerRef}
+        className="flex items-center flex-nowrap"
+        onMouseEnter={() => setIsAnyHovered(true)}
+        onMouseLeave={() => setIsAnyHovered(false)}
+      >
+        {data.slice(0, visibleCount).map((category) => (
+          <div key={category.id} className="flex-shrink-0">
+            <CategoryDropdown
+              category={category}
+              isActive={activeCategory === category.slug}
+              isNavigationHovered={isAnyHovered}
+            />
+          </div>
+        ))}
+        <div className="flex-shrink-0">
+          <Button
+            className={cn(
+              "h-11 px-4 bg-transparent border-transparent rounded-full hover:bg-white hover:border-primary text-black",
+              isActiveCategoryHidden &&
+                !isAnyHovered &&
+                "bg-white border-primary",
+            )}
+            onClick={() => setIsSidebarOpen(true)} // Open a sidebar/modal if you want
+          >
+            View all
+            <ListFilterIcon className="ml-2" />
+          </Button>
+        </div>
       </div>
     </div>
   );
