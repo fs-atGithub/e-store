@@ -151,17 +151,23 @@ const seed = async () => {
         parent: null,
       },
     });
-    for (const subcategory of category.subcategories || []) {
+    for (const subCategory of category.subcategories || []) {
       await payload.create({
         collection: "categories",
         data: {
-          name: subcategory.name,
-          slug: subcategory.slug,
+          name: subCategory.name,
+          slug: subCategory.slug,
           parent: parentCategory.id,
         },
       });
     }
   }
 };
-await seed();
-process.exit(0);
+try {
+  await seed();
+  console.log("Seeded categories successfully");
+  process.exit(0);
+} catch (error) {
+  console.error("Error seeding categories:", error);
+  process.exit(1);
+}

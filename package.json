@@ -10,7 +10,7 @@
     "lint": "next lint",
     "generate:types": "payload generate:types",
     "db:fresh": "payload migrate:fresh",
-    "db:seed": "bun run seed/seed.ts"
+    "db:seed": "bun run /seed/seed.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
