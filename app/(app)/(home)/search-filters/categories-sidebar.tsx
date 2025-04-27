@@ -32,6 +32,13 @@ export const CategoriesSidebar = ({
   const currentCategories = parentCategory?.subcategories ?? data;
 
   const handleCategoryClick = (category: CustomCategory) => {
+    if (category.slug === "all") {
+      // Redirect to the homepage if the slug is "all"
+      router.push(`/`);
+      onOpenChange(false); // Close sidebar
+      return;
+    }
+
     if (category.subcategories && category.subcategories.length > 0) {
       setParentCategory(category); // Dive into subcategories
     } else {
