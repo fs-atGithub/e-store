@@ -4,6 +4,7 @@ import React, { ReactNode } from "react";
 import { Footer } from "@/app/(app)/(home)/footer";
 import { Navbar } from "@/app/(app)/(home)/navbar";
 import { SearchFilters } from "@/app/(app)/(home)/search-filters";
+import { CustomCategory } from "@/app/(app)/(home)/types";
 import { Category } from "@/payload-types";
 import configPromise from "@payload-config";
 
@@ -25,7 +26,7 @@ const HomeLayout = async ({ children }: HomeLayoutProps) => {
       },
     },
   });
-  const formattedData = data.docs.map((doc) => ({
+  const formattedData: CustomCategory[] = data.docs.map((doc) => ({
     ...doc,
     subcategories: (doc.subcategories?.docs ?? []).map((doc) => ({
       ...(doc as Category),
