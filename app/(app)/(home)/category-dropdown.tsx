@@ -30,13 +30,13 @@ export const CategoryDropdown = ({
   };
 
   return (
-    <div className={"relative"}>
-      <div
-        className={"relative"}
-        ref={dropdownRef}
-        onMouseLeave={onMouseLeave}
-        onMouseEnter={onMouseEnter}
-      >
+    <div
+      className={"relative"}
+      ref={dropdownRef}
+      onMouseLeave={onMouseLeave}
+      onMouseEnter={onMouseEnter}
+    >
+      <div className="relative">
         <Button
           variant={"elevated"}
           className={cn(
