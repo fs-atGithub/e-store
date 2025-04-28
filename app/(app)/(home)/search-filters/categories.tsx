@@ -78,17 +78,17 @@ export const Categories = ({ data }: CategoriesProps) => {
             />
           </div>
         ))}
-        <div ref={viewAllRef} className="flex-shrink-0">
+        <div ref={viewAllRef} className=" flex shrink-0">
           <Button
             className={cn(
-              "h-11 px-4 bg-transparent border-transparent rounded-full hover:bg-white hover:border-primary text-black",
+              "h-11 px-4 bg-transparent border-transparent rounded-full, hover:bg-white hover:border-primary text-black",
               isActiveCategoryHidden &&
                 !isAnyHovered &&
                 "bg-white border-primary",
             )}
           >
             View all
-            <ListFilterIcon className="ml-2" />
+            <ListFilterIcon className="ml-2 flex cursor-pointer" />
           </Button>
         </div>
       </div>
@@ -119,8 +119,7 @@ export const Categories = ({ data }: CategoriesProps) => {
             )}
             onClick={() => setIsSidebarOpen(true)} // Open a sidebar/modal if you want
           >
-            View all
-            <ListFilterIcon className="ml-2" />
+            <ListFilterIcon className="cursor-pointer" />
           </Button>
         </div>
       </div>
