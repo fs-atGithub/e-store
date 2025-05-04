@@ -4,13 +4,12 @@ import React, { useRef, useState } from "react";
 
 import { SubCategoryMenu } from "@/app/(app)/(home)/search-filters/subcategory-menu";
 import { useDropdownPosition } from "@/app/(app)/(home)/search-filters/use-dropdown-position";
-import { CustomCategory } from "@/app/(app)/(home)/types";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Category } from "@/payload-types";
+import { CategoriesGetManyOutput } from "@/modules/categories/types";
 
 type CategoryDropdownProps = {
-  category: CustomCategory;
+  category: CategoriesGetManyOutput[1];
   isActive?: boolean;
   isNavigationHovered?: boolean;
 };
@@ -55,7 +54,6 @@ export const CategoryDropdown = ({
           )}
         >
           <Link href={`/${category.slug === "all" ? "" : category.slug}`}>
-            {" "}
             {category.name}
           </Link>
         </Button>

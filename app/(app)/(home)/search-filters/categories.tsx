@@ -6,11 +6,11 @@ import React, { useEffect, useRef, useState } from "react";
 
 import { CategoryDropdown } from "@/app/(app)/(home)/category-dropdown";
 import { CategoriesSidebar } from "@/app/(app)/(home)/search-filters/categories-sidebar";
-import { CustomCategory } from "@/app/(app)/(home)/types";
 import { cn } from "@/lib/utils";
+import { CategoriesGetManyOutput } from "@/modules/categories/types";
 
 type CategoriesProps = {
-  data: CustomCategory[];
+  data: CategoriesGetManyOutput;
 };
 
 export const Categories = ({ data }: CategoriesProps) => {
@@ -59,11 +59,7 @@ export const Categories = ({ data }: CategoriesProps) => {
   return (
     <div className="relative w-full">
       {/* Invisible items (for measuring) */}
-      <CategoriesSidebar
-        open={isSidebarOpen}
-        onOpenChange={setIsSidebarOpen}
-        data={data}
-      />
+      <CategoriesSidebar open={isSidebarOpen} onOpenChange={setIsSidebarOpen} />
       <div
         className="absolute opacity-0 pointer-events-none flex"
         ref={measureRef}

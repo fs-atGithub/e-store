@@ -1,11 +1,11 @@
 import Link from "next/link";
 import React from "react";
 
-import { CustomCategory } from "@/app/(app)/(home)/types";
+import { CategoriesGetManyOutput } from "@/modules/categories/types";
 import { Category } from "@/payload-types";
 
 type SubcategoryMenuProps = {
-  category: CustomCategory;
+  category: CategoriesGetManyOutput[1];
   isOpen: boolean;
   position: { top: number; left: number };
 };

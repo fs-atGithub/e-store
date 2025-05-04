@@ -3,24 +3,14 @@ import { ListFilterIcon, SearchIcon } from "lucide-react";
 import React, { useState } from "react";
 
 import { CategoriesSidebar } from "@/app/(app)/(home)/search-filters/categories-sidebar";
-import { CustomCategory } from "@/app/(app)/(home)/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-type SearchInputProps = {
-  disabled?: boolean;
-  data: CustomCategory[];
-};
-
-export const SearchInput = ({ disabled, data }: SearchInputProps) => {
+export const SearchInput = ({ disabled }: { disabled: boolean }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   return (
-    <div className={"flex items-center gap-2 w-full"}>
-      <CategoriesSidebar
-        open={isSidebarOpen}
-        onOpenChange={setIsSidebarOpen}
-        data={data}
-      />
+    <div suppressHydrationWarning className={"flex items-center gap-2 w-full"}>
+      <CategoriesSidebar open={isSidebarOpen} onOpenChange={setIsSidebarOpen} />
       <div className={"relative w-full"}>
         <SearchIcon
           className={

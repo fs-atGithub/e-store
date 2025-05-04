@@ -1,10 +1,10 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
-import { CustomCategory } from "@/app/(app)/(home)/types";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Sheet,
@@ -12,52 +12,62 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { CategoriesGetManyOutput } from "@/modules/categories/types";
+import { useTRPC } from "@/trpc/client";
 
 type CategoriesSidebarProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  data: CustomCategory[];
 };
 
 export const CategoriesSidebar = ({
   open,
   onOpenChange,
-  data,
 }: CategoriesSidebarProps) => {
+  const trpc = useTRPC();
+  const { data } = useQuery(trpc.categories.getMany.queryOptions());
   const router = useRouter();
-  const [parentCategory, setParentCategory] = useState<CustomCategory | null>(
-    null,
-  );
+
+  const [parentCategories, setParentCategories] =
+    useState<CategoriesGetManyOutput | null>(null);
+
+  const [selectedCategory, setSelectedCategory] = useState<
+    CategoriesGetManyOutput[1] | null
+  >(null);
 
   const handleOpenChange = (open: boolean) => {
-    setParentCategory(null);
+    setSelectedCategory(null);
+    setParentCategories(null);
     onOpenChange(open);
   };
 
-  const currentCategories = parentCategory?.subcategories ?? data;
+  const currentCategories = parentCategories ?? data ?? [];
 
-  const handleCategoryClick = (category: CustomCategory) => {
-    if (category.slug === "all") {
-      // Redirect to the homepage if the slug is "all"
-      router.push(`/`);
-      onOpenChange(false); // Close sidebar
-      return;
-    }
-
+  const handleCategoryClick = (category: CategoriesGetManyOutput[1]) => {
     if (category.subcategories && category.subcategories.length > 0) {
-      setParentCategory(category); // Dive into subcategories
+      setParentCategories(category.subcategories as CategoriesGetManyOutput);
+      setSelectedCategory(category);
     } else {
-      // Navigate to the correct category URL, including parent category if applicable
-      if (parentCategory) {
-        router.push(`/categories/${parentCategory.slug}/${category.slug}`); // Correct URL format
+      if (parentCategories && selectedCategory) {
+        router.push(`/${selectedCategory.slug}/${category.slug}`);
       } else {
-        router.push(`/categories/${category.slug}`); // Top-level category
+        if (category.slug === "all") {
+          router.push("/");
+        } else {
+          router.push(`/${category.slug}`);
+        }
       }
-      onOpenChange(false); // Close sidebar
+      handleOpenChange(false);
+    }
+  };
+  const handleBackClick = () => {
+    if (parentCategories) {
+      setParentCategories(null);
+      setSelectedCategory(null);
     }
   };
 
-  const backgroundColor = parentCategory?.color ?? "white";
+  const backgroundColor = selectedCategory?.color ?? "white";
 
   return (
     <Sheet open={open} onOpenChange={handleOpenChange}>
@@ -71,9 +81,9 @@ export const CategoriesSidebar = ({
         </SheetHeader>
 
         <ScrollArea className="flex flex-col overflow-y-auto h-full pb-2">
-          {parentCategory && (
+          {parentCategories && (
             <button
-              onClick={() => setParentCategory(null)}
+              onClick={handleBackClick}
               className="w-full text-left p-4 hover:bg-black hover:text-white flex items-center font-medium"
             >
               <ChevronLeftIcon className="size-4 mr-2" />
@@ -81,7 +91,7 @@ export const CategoriesSidebar = ({
             </button>
           )}
 
-          {currentCategories.map((category) => (
+          {currentCategories?.map((category) => (
             <button
               key={category.slug}
               onClick={() => handleCategoryClick(category)}
