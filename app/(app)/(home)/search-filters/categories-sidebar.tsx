@@ -15,6 +15,8 @@ import {
 import { CategoriesGetManyOutput } from "@/modules/categories/types";
 import { useTRPC } from "@/trpc/client";
 
+type Category = CategoriesGetManyOutput[number];
+
 type CategoriesSidebarProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -25,15 +27,17 @@ export const CategoriesSidebar = ({
   onOpenChange,
 }: CategoriesSidebarProps) => {
   const trpc = useTRPC();
-  const { data } = useQuery(trpc.categories.getMany.queryOptions());
+  const { data, isLoading, isError } = useQuery(
+    trpc.categories.getMany.queryOptions(),
+  );
   const router = useRouter();
 
-  const [parentCategories, setParentCategories] =
-    useState<CategoriesGetManyOutput | null>(null);
-
-  const [selectedCategory, setSelectedCategory] = useState<
-    CategoriesGetManyOutput[1] | null
-  >(null);
+  const [parentCategories, setParentCategories] = useState<Category[] | null>(
+    null,
+  );
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(
+    null,
+  );
 
   const handleOpenChange = (open: boolean) => {
     setSelectedCategory(null);
@@ -43,28 +47,31 @@ export const CategoriesSidebar = ({
 
   const currentCategories = parentCategories ?? data ?? [];
 
-  const handleCategoryClick = (category: CategoriesGetManyOutput[1]) => {
-    if (category.subcategories && category.subcategories.length > 0) {
-      setParentCategories(category.subcategories as CategoriesGetManyOutput);
+  const handleCategoryClick = (category: Category) => {
+    if (category.subcategories?.length) {
+      // Ensure subcategories are always properly shaped
+      const normalized = category.subcategories.map((sub) => ({
+        ...sub,
+        subcategories: sub.subcategories ?? [],
+      }));
+      setParentCategories(normalized);
       setSelectedCategory(category);
     } else {
-      if (parentCategories && selectedCategory) {
-        router.push(`/${selectedCategory.slug}/${category.slug}`);
-      } else {
-        if (category.slug === "all") {
-          router.push("/");
-        } else {
-          router.push(`/${category.slug}`);
-        }
-      }
+      const path =
+        parentCategories && selectedCategory
+          ? `/${selectedCategory.slug}/${category.slug}`
+          : category.slug === "all"
+            ? "/"
+            : `/${category.slug}`;
+
+      router.push(path);
       handleOpenChange(false);
     }
   };
+
   const handleBackClick = () => {
-    if (parentCategories) {
-      setParentCategories(null);
-      setSelectedCategory(null);
-    }
+    setParentCategories(null);
+    setSelectedCategory(null);
   };
 
   const backgroundColor = selectedCategory?.color ?? "white";
@@ -81,6 +88,11 @@ export const CategoriesSidebar = ({
         </SheetHeader>
 
         <ScrollArea className="flex flex-col overflow-y-auto h-full pb-2">
+          {isLoading && <div className="p-4">Loading...</div>}
+          {isError && (
+            <div className="p-4 text-red-500">Failed to load categories.</div>
+          )}
+
           {parentCategories && (
             <button
               onClick={handleBackClick}
@@ -91,14 +103,14 @@ export const CategoriesSidebar = ({
             </button>
           )}
 
-          {currentCategories?.map((category) => (
+          {currentCategories.map((category) => (
             <button
               key={category.slug}
               onClick={() => handleCategoryClick(category)}
               className="w-full text-left p-4 hover:bg-black hover:text-white flex justify-between items-center font-medium"
             >
               {category.name}
-              {category.subcategories && category.subcategories.length > 0 && (
+              {category.subcategories?.length > 0 && (
                 <ChevronRightIcon className="size-4" />
               )}
             </button>
